@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 // Player accounts. Works offline: accounts are always kept on this device (LocalStore) and
@@ -105,11 +104,6 @@ public class AccountDAO {
          }
       } catch (SQLException e) {
          if (localMatch) {
-            return LoginResult.OK_OFFLINE;
-         }
-
-         // The original built-in login, still allowed offline.
-         if (name.equals("DOM") && Arrays.equals("123".toCharArray(), password)) {
             return LoginResult.OK_OFFLINE;
          }
 

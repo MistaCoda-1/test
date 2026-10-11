@@ -3,26 +3,17 @@ package ui;
 import db.AccountDAO;
 import db.ServerSettings;
 import db.SyncService;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
+
+import java.awt.*;
+import javax.swing.*;
+
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingWorker;
 
 public class LoginPanel extends JPanel {
    private final JTextField textField = new JTextField(20);
    private final JPasswordField passwordField = new JPasswordField(20);
-   private final JButton submitButton = new JButton("DETERMINATION");
+   private final JButton submitButton = new JButton("LOG IN");
    private final JButton createAccountButton = new JButton("CREATE ACCOUNT");
    private final JButton serverButton = new JButton("SERVER SETTINGS");
    private final ImageIcon logo = new ImageIcon(this.getClass().getResource("/resources/logo.png"));
@@ -43,8 +34,13 @@ public class LoginPanel extends JPanel {
       UIUtils.styleButton(this.createAccountButton);
       UIUtils.styleButton(this.serverButton);
       Font smallFont = UIUtils.undertaleFont.deriveFont(16.0F);
-      this.createAccountButton.setPreferredSize(new Dimension(280, 40));
-      this.createAccountButton.setMaximumSize(new Dimension(280, 40));
+      
+      // Sizes adjusted to fit nicely side-by-side
+      this.submitButton.setPreferredSize(new Dimension(140, 40));
+      this.submitButton.setMaximumSize(new Dimension(140, 40));
+      this.createAccountButton.setPreferredSize(new Dimension(210, 40));
+      this.createAccountButton.setMaximumSize(new Dimension(210, 40));
+      
       this.serverButton.setFont(smallFont);
       this.serverButton.setPreferredSize(new Dimension(220, 30));
       this.serverButton.setMaximumSize(new Dimension(220, 30));
@@ -56,17 +52,23 @@ public class LoginPanel extends JPanel {
       this.label.setAlignmentX(0.5F);
       userRow.setAlignmentX(0.5F);
       passRow.setAlignmentX(0.5F);
-      this.submitButton.setAlignmentX(0.5F);
-      this.createAccountButton.setAlignmentX(0.5F);
+      
+      // Row to group login and account buttons horizontally
+      JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+      buttonRow.setOpaque(false);
+      buttonRow.setMaximumSize(new Dimension(400, 45));
+      buttonRow.add(this.submitButton);
+      buttonRow.add(this.createAccountButton);
+      buttonRow.setAlignmentX(0.5F);
+
       this.serverButton.setAlignmentX(0.5F);
+      
       this.add(this.label);
       this.add(userRow);
       this.add(Box.createVerticalStrut(5));
       this.add(passRow);
       this.add(Box.createVerticalStrut(20));
-      this.add(this.submitButton);
-      this.add(Box.createVerticalStrut(10));
-      this.add(this.createAccountButton);
+      this.add(buttonRow); // Inserted horizontally aligned buttons here
       this.add(Box.createVerticalStrut(15));
       this.loginStatusLabel.setAlignmentX(0.5F);
       this.add(this.loginStatusLabel);

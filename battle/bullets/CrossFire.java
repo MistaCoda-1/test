@@ -18,8 +18,8 @@ public class CrossFire extends BulletPattern {
    private final Image needleSprite;
    private final Image sideSprite;
 
-   public CrossFire(int arenaWidth, int arenaHeight, Image needleSprite, Image sideSprite) {
-      super(arenaWidth, arenaHeight, 300);
+   public CrossFire(int arenaWidth, int arenaHeight, Image needleSprite, Image sideSprite, double density) {
+      super(arenaWidth, arenaHeight, 300, density);
       this.needleSprite = needleSprite;
       this.sideSprite = sideSprite;
    }
@@ -27,12 +27,12 @@ public class CrossFire extends BulletPattern {
    @Override
    protected void spawnTick(int elapsedTicks) {
       ThreadLocalRandom random = ThreadLocalRandom.current();
-      if (elapsedTicks % NEEDLE_EVERY_TICKS == 0) {
+      if (this.spawnsOn(elapsedTicks, NEEDLE_EVERY_TICKS)) {
          double x = random.nextDouble(0.0, Math.max(1, this.arenaWidth - NEEDLE_W));
          this.bullets.add(this.make(x, -20.0, 0.0, NEEDLE_SPEED, NEEDLE_W, NEEDLE_H, this.needleSprite));
       }
 
-      if (elapsedTicks % SIDE_EVERY_TICKS == 0) {
+      if (this.spawnsOn(elapsedTicks, SIDE_EVERY_TICKS)) {
          double y = random.nextDouble(0.0, Math.max(1, this.arenaHeight - SIDE_H));
          boolean fromLeft = random.nextBoolean();
          double x = fromLeft ? -SIDE_W : this.arenaWidth;

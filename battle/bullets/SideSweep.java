@@ -13,14 +13,14 @@ public class SideSweep extends BulletPattern {
    private static final int DAMAGE = 3;
    private final Image bulletSprite;
 
-   public SideSweep(int arenaWidth, int arenaHeight, Image bulletSprite) {
-      super(arenaWidth, arenaHeight, 300);
+   public SideSweep(int arenaWidth, int arenaHeight, Image bulletSprite, double density) {
+      super(arenaWidth, arenaHeight, 300, density);
       this.bulletSprite = bulletSprite;
    }
 
    @Override
    protected void spawnTick(int elapsedTicks) {
-      if (elapsedTicks % SPAWN_EVERY_TICKS == 0) {
+      if (this.spawnsOn(elapsedTicks, SPAWN_EVERY_TICKS)) {
          ThreadLocalRandom random = ThreadLocalRandom.current();
          double y = random.nextDouble(0.0, Math.max(1, this.arenaHeight - BULLET_H));
          boolean fromLeft = random.nextBoolean();

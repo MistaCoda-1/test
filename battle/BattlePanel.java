@@ -2,6 +2,7 @@ package battle;
 
 import battle.bullets.BulletPattern;
 import battle.bullets.BulletRain;
+import battle.bullets.BulletScaling;
 import battle.bullets.CrossFire;
 import battle.bullets.SideSweep;
 import db.LeaderboardDAO;
@@ -11,12 +12,9 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.FilteredImageSource;
-import java.awt.image.RGBImageFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -36,61 +34,38 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import ui.GameSettings;
 import ui.Main;
-import ui.StatusBar;
 import ui.UIUtils;
 
 public class BattlePanel extends JPanel {
    private static final int STAGE_W = 960;
    private static final int STAGE_H = 700;
-   private static final int ENEMY_W = 700;
-   private static final int ENEMY_H = 280;
-   private static final int ENEMY_X = 130;
-   private static final int ENEMY_Y = 8;
-   private static final int ENEMY_SPRITE = 250;
-   private static final int ROW_H = 30;
-   private static final int BAR_W = 110;
-   private static final int BAR_H = 20;
-   private static final int ENEMY_HP_Y = 292;
+
    private static final int BOX_X = 25;
    private static final int BOX_Y = 328;
+
    private static final int BOX_W = 910;
    private static final int BOX_H = 265;
+
    private static final int BOX_PAD = 4;
+
    private static final int ARENA_W = 300;
    private static final int ARENA_H = 250;
-   private static final int STATUS_Y = 599;
+
    private static final int BTN_W = 212;
    private static final int BTN_H = 50;
    private static final int BTN_GAP = 20;
    private static final int BTN_Y = 635;
-   private static final int FIGHTS_PER_ENEMY = 5;
-   private static final BattlePanel.Enemy[] ENEMIES = new BattlePanel.Enemy[]{
-      new BattlePanel.Enemy("/resources/enemy.png", 1, "'SEEEEKAAAAAAIIII DEEEEEE!!!'",
-         "FROG", null, BattlePanel.BulletStyle.RAIN,
-         "FROG - ATK 2. Only knows one song.",
-         "Sing along", "You sing along. FROG croaks happily."),
-      new BattlePanel.Enemy("/resources/enemy.png", 1, "'Ribbit. You again?'",
-         "BLUE FROG", new Color(90, 170, 255), BattlePanel.BulletStyle.SIDES,
-         "BLUE FROG - ATK 3. Attacks from both sides.",
-         "Compliment", "You compliment BLUE FROG's color. It blushes... purple."),
-      new BattlePanel.Enemy("/resources/enemy.png", 1, "'I am the KING of this pond!'",
-         "RED FROG", new Color(255, 90, 90), BattlePanel.BulletStyle.CROSSFIRE,
-         "RED FROG - ATK 4. Thinks it rules the pond.",
-         "Bow", "You bow to RED FROG. It accepts your loyalty.")
-   };
+
    private static final int ACTS_TO_SPARE = 2;
-   private static final String LINE_DEFEATED = "The enemy falls over and you move on to the next level.";
-   private static final String LINE_FOLLOWED = "It seems it still wanted to fight and followed you.";
-   private static final String LINE_KILLED = "The enemy falls over and does not get back up.";
-   private static final String LINE_NEW_ENEMY = "You move on, but something else waits ahead.";
-   private static final String LINE_VICTORY = "There is no one left to fight.";
-   private static final String LINE_MERCY = "'You think you can spare me?!'";
+
    private BattlePanel.BattleState state = BattlePanel.BattleState.PLAYER_TURN;
+
    private final JPanel stage = new JPanel(null);
+
    private int selectedBtnIndex = 0;
    private CommandButton[] buttons;
    private Runnable[] commandActions;
-   EnemyBG enemyPanel = new EnemyBG(new Color(0, 255, 60), 140);
+
    JPanel dialoguePanel = new JPanel(new BorderLayout());
    private JLabel dialogueLabel;
    private FightMinigamePanel fightMinigame;
@@ -98,28 +73,32 @@ public class BattlePanel extends JPanel {
    private String[] dialogueLines;
    private int dialogueIndex;
    private Runnable onDialogueDone;
-   private JLabel enemySprite;
+
    private final ImageIcon heartIcon = new ImageIcon(this.getClass().getResource("/resources/player_soul.png"));
    Font gameFont = UIUtils.undertaleFont;
+
    private final String playerName;
    private int currentLvl = 1;
    private int currentHp = 20;
    private int maxHp = 20;
-   private final int totalGameLvl = 15;
+
    private int enemyHp;
    private int enemyMaxHp;
-   private JLabel statsTextLabel;
-   private JLabel hpMarker;
-   private StatusBar healthBar;
-   private JLabel hpNumericLabel;
-   private StatusBar enemyHealthBar;
+   private EnemyView enemyView;
+
+   private PlayerStatusRow playerStatus;
+
    private Image BULLET_SPRITE;
    private Image needleSprite;
+
    private ArenaPanel arena;
+   
    private int spareProgress = 0;
-   private final List<BattlePanel.Item> inventory = new ArrayList<>(List.of(
-      new BattlePanel.Item("Monster Candy", 10), new BattlePanel.Item("Spider Donut", 12), new BattlePanel.Item("Butterscotch Pie", 99)
+
+   private final List<Item> inventory = new ArrayList<>(List.of(
+      new Item("Monster Candy", 10), new Item("Spider Donut", 12), new Item("Butterscotch Pie", 99)
    ));
+
    private JLabel[] menuLabels;
    private int menuIndex;
    private IntConsumer onMenuPick;
@@ -137,7 +116,6 @@ public class BattlePanel extends JPanel {
       this.enemyHp = this.enemyMaxHp;
       this.loadBullet();
       this.buildEnemy();
-      this.buildEnemyStatus();
       this.buildDialogueBox();
       this.buildPlayerStatus();
       this.buildCommandButtons();
@@ -173,52 +151,8 @@ public class BattlePanel extends JPanel {
    }
 
    private void buildEnemy() {
-      this.enemyPanel.setLayout(null);
-      this.enemyPanel.setBounds(130, 8, 700, 280);
-      this.enemySprite = new JLabel();
-      this.enemyPanel.add(this.enemySprite);
-      this.stage.add(this.enemyPanel);
-      this.setEnemySprite(this.currentEnemy());
-   }
-
-   private void setEnemySprite(BattlePanel.Enemy enemy) {
-      ImageIcon originalIcon = new ImageIcon(this.getClass().getResource(enemy.spritePath()));
-      int targetH = 250;
-      int targetW = (int)Math.round((double)originalIcon.getIconWidth() / originalIcon.getIconHeight() * targetH);
-      Image image = originalIcon.getImage();
-      if (enemy.tint() != null) {
-         image = tinted(image, enemy.tint());
-      }
-
-      Image scaledImage = image.getScaledInstance(targetW, targetH, 4);
-      this.enemySprite.setIcon(new ImageIcon(scaledImage));
-      this.enemySprite.setBounds((700 - targetW) / 2, (280 - targetH) / 2, targetW, targetH);
-   }
-
-   // Multiplies every pixel by the tint color (the enemy sprite is white, so it simply becomes that color).
-   private static Image tinted(Image image, Color tint) {
-      RGBImageFilter filter = new RGBImageFilter() {
-         @Override
-         public int filterRGB(int x, int y, int argb) {
-            int r = ((argb >> 16) & 0xFF) * tint.getRed() / 255;
-            int g = ((argb >> 8) & 0xFF) * tint.getGreen() / 255;
-            int b = (argb & 0xFF) * tint.getBlue() / 255;
-            return (argb & 0xFF000000) | (r << 16) | (g << 8) | b;
-         }
-      };
-      return Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(image.getSource(), filter));
-   }
-
-   private void buildEnemyStatus() {
-      JLabel marker = this.makeLabel("HP");
-      int markerW = marker.getPreferredSize().width;
-      int gap = 8;
-      int x = (960 - (markerW + gap + 110)) / 2;
-      marker.setBounds(x, 292, markerW, 30);
-      this.enemyHealthBar = new StatusBar(this.enemyHp, this.enemyMaxHp);
-      this.enemyHealthBar.setBounds(x + markerW + gap, 297, 110, 20);
-      this.stage.add(marker);
-      this.stage.add(this.enemyHealthBar);
+      this.enemyView = new EnemyView(STAGE_W, this.currentEnemy(), this.enemyHp, this.enemyMaxHp);
+      this.stage.add(this.enemyView);
    }
 
    private void buildDialogueBox() {
@@ -231,15 +165,8 @@ public class BattlePanel extends JPanel {
    }
 
    private void buildPlayerStatus() {
-      this.statsTextLabel = this.makeLabel(this.statsText());
-      this.hpMarker = this.makeLabel("HP");
-      this.healthBar = new StatusBar(this.currentHp, this.maxHp);
-      this.hpNumericLabel = this.makeLabel(this.hpText());
-      this.stage.add(this.statsTextLabel);
-      this.stage.add(this.hpMarker);
-      this.stage.add(this.healthBar);
-      this.stage.add(this.hpNumericLabel);
-      this.layoutStatusRow();
+      this.playerStatus = new PlayerStatusRow(this.playerName, Enemies.TOTAL_LEVELS, STAGE_W, this.currentLvl, this.currentHp, this.maxHp);
+      this.stage.add(this.playerStatus);
    }
 
    private void buildCommandButtons() {
@@ -254,7 +181,7 @@ public class BattlePanel extends JPanel {
          this.stage.add(this.buttons[i]);
       }
 
-      this.commandActions = new Runnable[]{this::startFightSequence, this::actPlaceholder, this::itemPlaceholder, this::startMercy};
+      this.commandActions = new Runnable[]{this::startFightSequence, this::actButton, this::itemButton, this::startMercy};
    }
 
    private void buildKeyBindings() {
@@ -356,8 +283,8 @@ public class BattlePanel extends JPanel {
    }
 
    // ACT: "Check" shows the enemy's info; the enemy's own act counts toward sparing it.
-   private void actPlaceholder() {
-      BattlePanel.Enemy enemy = this.currentEnemy();
+   private void actButton() {
+      Enemy enemy = this.currentEnemy();
       this.showMenu(new String[]{"Check", enemy.actName()}, choice -> {
          if (choice == 0) {
             this.startDialogue(this::showBattleBox, enemy.checkText());
@@ -373,15 +300,15 @@ public class BattlePanel extends JPanel {
    }
 
    // ITEM: each item heals once and is used up. Using one takes your turn.
-   private void itemPlaceholder() {
+   private void itemButton() {
       if (this.inventory.isEmpty()) {
          this.startDialogue(this::restoreDialogueBox, "You have no items left.");
          return;
       }
 
-      String[] names = this.inventory.stream().map(BattlePanel.Item::name).toArray(String[]::new);
+      String[] names = this.inventory.stream().map(Item::name).toArray(String[]::new);
       this.showMenu(names, choice -> {
-         BattlePanel.Item item = this.inventory.remove(choice);
+         Item item = this.inventory.remove(choice);
          int before = this.currentHp;
          this.updatePlayerStats(this.currentHp + item.heal(), this.currentLvl);
          String result = this.currentHp >= this.maxHp ? "Your HP was maxed out." : "You recovered " + (this.currentHp - before) + " HP!";
@@ -468,7 +395,7 @@ public class BattlePanel extends JPanel {
 
    private void onHitEnemy(int damage) {
       this.enemyHp = Math.clamp((long)(this.enemyHp - damage), 0, this.enemyMaxHp);
-      this.enemyHealthBar.updateHp(this.enemyHp, this.enemyMaxHp);
+      this.enemyView.showHp(this.enemyHp, this.enemyMaxHp);
       Timer resultPause = new Timer(1200, e -> {
          if (this.enemyHp <= 0) {
             this.onEnemyDefeated();
@@ -522,7 +449,7 @@ public class BattlePanel extends JPanel {
    }
 
    private void restoreDialogueBox() {
-      BattlePanel.Enemy enemy = this.currentEnemy();
+      Enemy enemy = this.currentEnemy();
       String text;
       if (this.spareProgress >= ACTS_TO_SPARE) {
          text = enemy.name() + " doesn't want to fight anymore. (Try MERCY)";
@@ -538,19 +465,19 @@ public class BattlePanel extends JPanel {
    }
 
    private int fightNumber() {
-      return (this.currentLvl - 1) % 5 + 1;
+      return Enemies.fightNumber(this.currentLvl);
    }
 
-   private BattlePanel.Enemy currentEnemy() {
-      return ENEMIES[Math.min((this.currentLvl - 1) / 5, ENEMIES.length - 1)];
+   private Enemy currentEnemy() {
+      return Enemies.forLevel(this.currentLvl);
    }
 
    private void loadEnemy() {
-      BattlePanel.Enemy enemy = this.currentEnemy();
+      Enemy enemy = this.currentEnemy();
       this.enemyMaxHp = enemy.maxHp();
       this.enemyHp = this.enemyMaxHp;
-      this.enemyHealthBar.updateHp(this.enemyHp, this.enemyMaxHp);
-      this.setEnemySprite(enemy);
+      this.enemyView.showHp(this.enemyHp, this.enemyMaxHp);
+      this.enemyView.setEnemy(enemy);
       this.spareProgress = 0;
    }
 
@@ -560,15 +487,15 @@ public class BattlePanel extends JPanel {
 
    // Shared by killing (FIGHT) and sparing (MERCY): both clear the level.
    private void onEnemyDefeated(boolean spared) {
-      boolean finalKill = this.fightNumber() == 5;
-      boolean lastLevel = this.currentLvl >= 15;
+      boolean finalKill = this.fightNumber() == Enemies.FIGHTS_PER_ENEMY;
+      boolean lastLevel = this.currentLvl >= Enemies.TOTAL_LEVELS;
       String name = this.currentEnemy().name();
       if (lastLevel) {
          String ending = spared ? "You spared " + name + ". It hops away peacefully." : "The enemy falls over and does not get back up.";
          this.startDialogue(this::returnToMainMenu, ending, "There is no one left to fight.");
       } else {
-         // Level up: heal to full and record the new highest level.
-         this.updatePlayerStats(this.maxHp, this.currentLvl + 1);
+         // Level up: record the new highest level. HP carries over, there is no free heal between levels.
+         this.updatePlayerStats(this.currentHp, this.currentLvl + 1);
          this.saveProgress();
          if (finalKill) {
             String first = spared ? "You spared " + name + ". It hops away peacefully." : "The enemy falls over and does not get back up.";
@@ -590,11 +517,13 @@ public class BattlePanel extends JPanel {
       return this.spareProgress >= ACTS_TO_SPARE || this.enemyHp <= this.enemyMaxHp / 4;
    }
 
+   // Later fights of the same enemy spawn more bullets (tuned in BulletScaling).
    private BulletPattern createPattern() {
+      double density = BulletScaling.multiplier(this.fightNumber());
       return switch (this.currentEnemy().bulletStyle()) {
-         case RAIN -> new BulletRain(300, 250, this.BULLET_SPRITE);
-         case SIDES -> new SideSweep(300, 250, this.BULLET_SPRITE);
-         case CROSSFIRE -> new CrossFire(300, 250, this.needleSprite, this.BULLET_SPRITE);
+         case RAIN -> new BulletRain(300, 250, this.BULLET_SPRITE, density);
+         case SIDES -> new SideSweep(300, 250, this.BULLET_SPRITE, density);
+         case CROSSFIRE -> new CrossFire(300, 250, this.needleSprite, this.BULLET_SPRITE, density);
       };
    }
 
@@ -639,37 +568,11 @@ public class BattlePanel extends JPanel {
       }
    }
 
-   private String statsText() {
-      return this.playerName + "   LEVEL " + this.currentLvl + "/15";
-   }
-
-   private String hpText() {
-      return this.currentHp + " / " + this.maxHp;
-   }
-
-   private void layoutStatusRow() {
-      int x = 25;
-      x = this.placeRowLabel(this.statsTextLabel, x) + 24;
-      x = this.placeRowLabel(this.hpMarker, x) + 8;
-      this.healthBar.setBounds(x, 604, 110, 20);
-      x += 122;
-      this.placeRowLabel(this.hpNumericLabel, x);
-   }
-
-   private int placeRowLabel(JLabel label, int x) {
-      int w = label.getPreferredSize().width;
-      label.setBounds(x, 599, w, 30);
-      return x + w;
-   }
-
    public void updatePlayerStats(int newHp, int level) {
       this.currentHp = Math.clamp((long)newHp, 0, this.maxHp);
-      this.currentLvl = Math.clamp((long)level, 1, 15);
-      if (this.statsTextLabel != null && this.hpNumericLabel != null && this.healthBar != null) {
-         this.statsTextLabel.setText(this.statsText());
-         this.hpNumericLabel.setText(this.hpText());
-         this.layoutStatusRow();
-         this.healthBar.updateHp(this.currentHp, this.maxHp);
+      this.currentLvl = Math.clamp((long)level, 1, Enemies.TOTAL_LEVELS);
+      if (this.playerStatus != null) {
+         this.playerStatus.update(this.currentLvl, this.currentHp, this.maxHp);
       }
    }
 
@@ -691,19 +594,5 @@ public class BattlePanel extends JPanel {
       ENEMY_TURN,
       DIALOGUE,
       MENU;
-   }
-
-   private static enum BulletStyle {
-      RAIN,
-      SIDES,
-      CROSSFIRE;
-   }
-
-   // tint == null draws the sprite in its original colors.
-   private record Enemy(String spritePath, int maxHp, String greeting, String name, Color tint, BulletStyle bulletStyle,
-                        String checkText, String actName, String actLine) {
-   }
-
-   private record Item(String name, int heal) {
    }
 }

@@ -11,14 +11,14 @@ public class BulletRain extends BulletPattern {
    private static final int DAMAGE = 2;
    private final Image bulletSprite;
 
-   public BulletRain(int arenaWidth, int arenaHeight, Image bulletSprite) {
-      super(arenaWidth, arenaHeight, 300);
+   public BulletRain(int arenaWidth, int arenaHeight, Image bulletSprite, double density) {
+      super(arenaWidth, arenaHeight, 300, density);
       this.bulletSprite = bulletSprite;
    }
 
    @Override
    protected void spawnTick(int elapsedTicks) {
-      if (elapsedTicks % 10 == 0) {
+      if (this.spawnsOn(elapsedTicks, SPAWN_EVERY_TICKS)) {
          double x = ThreadLocalRandom.current().nextDouble(0.0, Math.max(1, this.arenaWidth - 20));
          if (this.bulletSprite != null) {
             this.bullets.add(new Bullet(x, -20.0, 0.0, 4.5, 20, 20, 2, this.bulletSprite));

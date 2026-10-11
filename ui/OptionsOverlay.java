@@ -47,7 +47,7 @@ public class OptionsOverlay extends UIUtils.DimmedOverlay {
       body.add(this.hint("CONTROLS"));
       body.add(this.hint("Arrows - move / choose"));
       body.add(this.hint("Z - confirm"));
-      body.add(this.hint("X - back / slow move"));
+      body.add(this.hint("X - back / Focus Move"));
       box.add(body, BorderLayout.CENTER);
 
       JLabel returnLabel = this.hint("Press X to return to Main Menu");

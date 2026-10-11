@@ -7,8 +7,6 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -51,7 +49,7 @@ public class MainMenuPanel extends JPanel {
       MenuButton startBtn = new MenuButton("START");
       MenuButton leaderboardBtn = new MenuButton("LEADERBOARD");
       MenuButton optionsBtn = new MenuButton("OPTIONS");
-      MenuButton exitBtn = new MenuButton("EXIT");
+      MenuButton exitBtn = new MenuButton("LOG OUT");
       startBtn.setAlignmentX(0.5F);
       leaderboardBtn.setAlignmentX(0.5F);
       optionsBtn.setAlignmentX(0.5F);
@@ -67,7 +65,6 @@ public class MainMenuPanel extends JPanel {
       this.btnPanel.add(exitBtn);
       this.btnPanel.setAlignmentX(0.5F);
       this.menuPanel.add(this.buildColumn());
-      this.addMouseSupport();
       this.add(this.menuPanel, "West");
       this.buildArt();
       this.add(this.artPanel, "Center");
@@ -160,7 +157,7 @@ public class MainMenuPanel extends JPanel {
       welcome.setAlignmentX(0.5F);
       this.statusLabel.setFont(SMALL_FONT);
       this.statusLabel.setAlignmentX(0.5F);
-      JLabel hint = UIUtils.createLabel("ARROWS + Z, OR CLICK");
+      JLabel hint = UIUtils.createLabel("ARROWS + Z");
       hint.setFont(SMALL_FONT);
       hint.setForeground(Color.GRAY);
       hint.setAlignmentX(0.5F);
@@ -173,30 +170,6 @@ public class MainMenuPanel extends JPanel {
       column.add(Box.createVerticalStrut(10));
       column.add(hint);
       return column;
-   }
-
-   private void addMouseSupport() {
-      for (int i = 0; i < this.buttons.length; i++) {
-         final int index = i;
-         this.buttons[i].addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-               if (!MainMenuPanel.this.leaderboardOpen && !MainMenuPanel.this.optionsOpen) {
-                  MainMenuPanel.this.selectedBtnIndex = index;
-                  MainMenuPanel.this.updateSelection();
-               }
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-               if (!MainMenuPanel.this.leaderboardOpen && !MainMenuPanel.this.optionsOpen) {
-                  MainMenuPanel.this.selectedBtnIndex = index;
-                  MainMenuPanel.this.updateSelection();
-                  MainMenuPanel.this.menuActions[index].run();
-               }
-            }
-         });
-      }
    }
 
    // Shows whether progress is reaching the server or waiting on this device.

@@ -15,7 +15,7 @@ public final class ServerSettings {
    private static final String DEFAULT_HOST = "localhost";
    private static final int DEFAULT_PORT = 3306;
    private static final String DEFAULT_USER = "root";
-   private static final String DEFAULT_PASSWORD = "";
+   private static final String DEFAULT_PASSWORD = ""; // Anyone can play :>
 
    private static String host = DEFAULT_HOST;
    private static int port = DEFAULT_PORT;

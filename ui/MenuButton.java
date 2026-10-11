@@ -2,7 +2,6 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import javax.swing.BorderFactory;
@@ -26,7 +25,6 @@ public class MenuButton extends JPanel {
       this.setMaximumSize(new Dimension(260, 44));
       this.setBackground(Color.BLACK);
       this.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
-      this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
       this.textLabel = UIUtils.createLabel(text);
       this.textLabel.setForeground(Color.WHITE);
       this.textLabel.setHorizontalAlignment(0);

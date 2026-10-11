@@ -8,12 +8,15 @@ public abstract class BulletPattern {
    protected final int arenaHeight;
    protected final List<Bullet> bullets = new ArrayList<>();
    private final int durationTicks;
+   private final double density;
    private int elapsedTicks = 0;
 
-   protected BulletPattern(int arenaWidth, int arenaHeight, int durationTicks) {
+   // density: 1.0 spawns the base amount of bullets, 2.0 twice as many (see BulletScaling).
+   protected BulletPattern(int arenaWidth, int arenaHeight, int durationTicks, double density) {
       this.arenaWidth = arenaWidth;
       this.arenaHeight = arenaHeight;
       this.durationTicks = durationTicks;
+      this.density = density;
    }
 
    public final void update() {
@@ -30,6 +33,12 @@ public abstract class BulletPattern {
    }
 
    protected abstract void spawnTick(int var1);
+
+   // True on the ticks where something that spawns "every baseTicks" should spawn, sped up by the density.
+   // With density 1.0 this is the same as tick % baseTicks == 0; fractional densities work too.
+   protected final boolean spawnsOn(int tick, int baseTicks) {
+      return Math.floor(tick * this.density / baseTicks) != Math.floor((tick - 1) * this.density / baseTicks);
+   }
 
    public boolean isOver() {
       return this.elapsedTicks >= this.durationTicks && this.bullets.isEmpty();
