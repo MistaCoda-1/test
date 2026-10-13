@@ -38,23 +38,6 @@ import ui.UIUtils;
 
 public class BattlePanel extends JPanel {
    private static final int STAGE_W = 960;
-   private static final int STAGE_H = 700;
-
-   private static final int BOX_X = 25;
-   private static final int BOX_Y = 328;
-
-   private static final int BOX_W = 910;
-   private static final int BOX_H = 265;
-
-   private static final int BOX_PAD = 4;
-
-   private static final int ARENA_W = 300;
-   private static final int ARENA_H = 250;
-
-   private static final int BTN_W = 212;
-   private static final int BTN_H = 50;
-   private static final int BTN_GAP = 20;
-   private static final int BTN_Y = 635;
 
    private static final int ACTS_TO_SPARE = 2;
 
