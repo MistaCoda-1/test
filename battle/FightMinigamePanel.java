@@ -13,11 +13,6 @@ import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
 public class FightMinigamePanel extends JPanel {
-   private static final int BAR_WIDTH = 750;
-   private static final int BAR_HEIGHT = 20;
-   private static final int TARGET_WIDTH = 30;
-   private static final int MAX_DAMAGE = 10;
-   private static final int BAR_Y = 100;
    private final Timer tickTimer;
    private final FightMinigamePanel.DamageListener listener;
    private double linePos = 0.0;

@@ -10,11 +10,15 @@ import javax.swing.Timer;
 public class AnimateBox extends JPanel {
    private final int startWidth;
    private final int startHeight;
+
    private final int targetWidth;
    private final int targetHeight;
+
    private final Runnable onComplete;
+
    private int boxWidth;
    private int boxHeight;
+   
    private Timer timer;
 
    public AnimateBox(int startWidth, int startHeight, int targetWidth, int targetHeight, Runnable onComplete) {

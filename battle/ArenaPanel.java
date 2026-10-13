@@ -2,40 +2,34 @@ package battle;
 
 import battle.bullets.Bullet;
 import battle.bullets.BulletPattern;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
+
 import java.awt.event.ActionEvent;
 import java.util.function.IntConsumer;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
+
+import java.awt.*;
+import javax.swing.*;
 
 public class ArenaPanel extends JPanel {
    private final Image heartImage;
    private final int heartWidth;
    private final int heartHeight;
+
    private int soulX;
    private int soulY;
-   private final int normalSpeed = 6;
-   private final int focusSpeed = 3;
+
    private Timer gameLoopTimer;
+
    private boolean moveUp;
    private boolean moveDown;
    private boolean moveLeft;
    private boolean moveRight;
+
    private boolean focusActive;
+
    private final IntConsumer onPlayerHit;
    private final Runnable onTurnEnd;
+   
    private BulletPattern pattern;
-   private static final int INVINCIBILITY_TICKS = 30;
    private int invincibleTicks = 0;
 
    public ArenaPanel(int width, int height, ImageIcon heartIcon, IntConsumer onPlayerHit, Runnable onTurnEnd) {

@@ -6,9 +6,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BulletRain extends BulletPattern {
    private static final int SPAWN_EVERY_TICKS = 10;
-   private static final int BULLET_SIZE = 20;
-   private static final double FALL_SPEED = 4.5;
-   private static final int DAMAGE = 2;
    private final Image bulletSprite;
 
    public BulletRain(int arenaWidth, int arenaHeight, Image bulletSprite, double density) {

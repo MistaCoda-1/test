@@ -3,11 +3,7 @@ package ui;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 
 public class LeaderboardOverlay extends UIUtils.DimmedOverlay {
    public LeaderboardOverlay(final Runnable onClose) {

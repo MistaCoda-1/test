@@ -19,7 +19,6 @@ import javax.swing.border.EmptyBorder;
 
 public class LeaderboardPanel extends JPanel {
    Font gameFont = UIUtils.undertaleFont;
-   private static final int TOP_LIMIT = 10;
    private final JPanel tablePanel = new JPanel(new GridBagLayout());
    private JLabel titleLabel;
 
