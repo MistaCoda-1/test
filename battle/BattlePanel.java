@@ -1,10 +1,7 @@
 package battle;
 
 import battle.bullets.BulletPattern;
-import battle.bullets.BulletRain;
 import battle.bullets.BulletScaling;
-import battle.bullets.CrossFire;
-import battle.bullets.SideSweep;
 import db.LeaderboardDAO;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -73,6 +70,7 @@ public class BattlePanel extends JPanel {
 
    private Image BULLET_SPRITE;
    private Image needleSprite;
+   private PatternPicker patternPicker;
 
    private ArenaPanel arena;
    
@@ -98,6 +96,7 @@ public class BattlePanel extends JPanel {
       this.enemyMaxHp = this.currentEnemy().maxHp();
       this.enemyHp = this.enemyMaxHp;
       this.loadBullet();
+      this.patternPicker = new PatternPicker(300, 250, this.BULLET_SPRITE, this.needleSprite);
       this.buildEnemy();
       this.buildDialogueBox();
       this.buildPlayerStatus();
@@ -148,7 +147,7 @@ public class BattlePanel extends JPanel {
    }
 
    private void buildPlayerStatus() {
-      this.playerStatus = new PlayerStatusRow(this.playerName, Enemies.TOTAL_LEVELS, STAGE_W, this.currentLvl, this.currentHp, this.maxHp);
+      this.playerStatus = new PlayerStatusRow(this.playerName, STAGE_W, this.currentLvl, this.currentHp, this.maxHp);
       this.stage.add(this.playerStatus);
    }
 
@@ -468,31 +467,26 @@ public class BattlePanel extends JPanel {
       this.onEnemyDefeated(false);
    }
 
-   // Shared by killing (FIGHT) and sparing (MERCY): both clear the level.
+   // Shared by killing (FIGHT) and sparing (MERCY): both clear the level. The game is endless,
+   // so there is no last level; a run only ends when the player is defeated.
    private void onEnemyDefeated(boolean spared) {
       boolean finalKill = this.fightNumber() == Enemies.FIGHTS_PER_ENEMY;
-      boolean lastLevel = this.currentLvl >= Enemies.TOTAL_LEVELS;
       String name = this.currentEnemy().name();
-      if (lastLevel) {
-         String ending = spared ? "You spared " + name + ". It hops away peacefully." : "The enemy falls over and does not get back up.";
-         this.startDialogue(this::returnToMainMenu, ending, "There is no one left to fight.");
+      // Level up: record the new highest level. HP carries over, there is no free heal between levels.
+      this.updatePlayerStats(this.currentHp, this.currentLvl + 1);
+      this.saveProgress();
+      if (finalKill) {
+         String first = spared ? "You spared " + name + ". It hops away peacefully." : "The enemy falls over and does not get back up.";
+         this.startDialogue(() -> {
+            this.loadEnemy();
+            this.startDialogue(this::restoreDialogueBox, "You move on, but something else waits ahead.");
+         }, first);
       } else {
-         // Level up: record the new highest level. HP carries over, there is no free heal between levels.
-         this.updatePlayerStats(this.currentHp, this.currentLvl + 1);
-         this.saveProgress();
-         if (finalKill) {
-            String first = spared ? "You spared " + name + ". It hops away peacefully." : "The enemy falls over and does not get back up.";
-            this.startDialogue(() -> {
-               this.loadEnemy();
-               this.startDialogue(this::restoreDialogueBox, "You move on, but something else waits ahead.");
-            }, first);
-         } else {
-            String first = spared ? "You spared " + name + ". You move on to the next level." : "The enemy falls over and you move on to the next level.";
-            this.startDialogue(() -> {
-               this.loadEnemy();
-               this.startDialogue(this::restoreDialogueBox, "It seems it still wanted to fight and followed you.");
-            }, first);
-         }
+         String first = spared ? "You spared " + name + ". You move on to the next level." : "The enemy falls over and you move on to the next level.";
+         this.startDialogue(() -> {
+            this.loadEnemy();
+            this.startDialogue(this::restoreDialogueBox, "It seems it still wanted to fight and followed you.");
+         }, first);
       }
    }
 
@@ -500,14 +494,9 @@ public class BattlePanel extends JPanel {
       return this.spareProgress >= ACTS_TO_SPARE || this.enemyHp <= this.enemyMaxHp / 4;
    }
 
-   // Later fights of the same enemy spawn more bullets (tuned in BulletScaling).
+   // A random pattern each turn; the higher the level, the more bullets (tuned in BulletScaling).
    private BulletPattern createPattern() {
-      double density = BulletScaling.multiplier(this.fightNumber());
-      return switch (this.currentEnemy().bulletStyle()) {
-         case RAIN -> new BulletRain(300, 250, this.BULLET_SPRITE, density);
-         case SIDES -> new SideSweep(300, 250, this.BULLET_SPRITE, density);
-         case CROSSFIRE -> new CrossFire(300, 250, this.needleSprite, this.BULLET_SPRITE, density);
-      };
+      return this.patternPicker.next(BulletScaling.multiplier(this.currentLvl));
    }
 
    private void returnToMainMenu() {
@@ -553,7 +542,7 @@ public class BattlePanel extends JPanel {
 
    public void updatePlayerStats(int newHp, int level) {
       this.currentHp = Math.clamp((long)newHp, 0, this.maxHp);
-      this.currentLvl = Math.clamp((long)level, 1, Enemies.TOTAL_LEVELS);
+      this.currentLvl = Math.max(1, level);
       if (this.playerStatus != null) {
          this.playerStatus.update(this.currentLvl, this.currentHp, this.maxHp);
       }

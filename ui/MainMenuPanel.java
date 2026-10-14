@@ -40,9 +40,9 @@ public class MainMenuPanel extends JPanel {
       this.setBackground(Color.BLACK);
       this.menuPanel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 30));
       this.btnPanel.setLayout(new BoxLayout(this.btnPanel, 1));
-      this.btnPanel.setOpaque(false);
-      this.menuPanel.setOpaque(false);
-      this.artPanel.setOpaque(false);
+      // this.btnPanel.setOpaque(false);
+      // this.menuPanel.setOpaque(false);
+      // this.artPanel.setOpaque(false);
       this.menuPanel.setBackground(Color.RED);
       this.artPanel.setBackground(Color.BLUE);
       this.menuPanel.setLayout(new GridBagLayout());

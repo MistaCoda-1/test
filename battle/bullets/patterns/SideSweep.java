@@ -1,8 +1,11 @@
-package battle.bullets;
+package battle.bullets.patterns;
 
 import java.awt.Color;
 import java.awt.Image;
 import java.util.concurrent.ThreadLocalRandom;
+
+import battle.bullets.Bullet;
+import battle.bullets.BulletPattern;
 
 // Bullets fly in horizontally from the left and right walls at random heights.
 public class SideSweep extends BulletPattern {

@@ -1,19 +1,22 @@
-package battle.bullets;
+package battle.bullets.patterns;
 
 import java.awt.Color;
 import java.awt.Image;
 import java.util.concurrent.ThreadLocalRandom;
 
+import battle.bullets.Bullet;
+import battle.bullets.BulletPattern;
+
 // Fast falling needles combined with bullets from the side walls.
 public class CrossFire extends BulletPattern {
-   private static final int NEEDLE_EVERY_TICKS = 12;
-   private static final int SIDE_EVERY_TICKS = 22;
+   private static final int NEEDLE_EVERY_TICKS = 40;
+   private static final int SIDE_EVERY_TICKS = 60;
    private static final int NEEDLE_W = 12;
    private static final int NEEDLE_H = 27;
    private static final int SIDE_W = 20;
    private static final int SIDE_H = 16;
-   private static final double NEEDLE_SPEED = 5.5;
-   private static final double SIDE_SPEED = 3.5;
+   private static final double NEEDLE_SPEED = 3.5;
+   private static final double SIDE_SPEED = 2.5;
    private static final int DAMAGE = 4;
    private final Image needleSprite;
    private final Image sideSprite;

@@ -1,14 +1,17 @@
-package battle.bullets;
+package battle.bullets.patterns;
 
 import java.awt.Color;
 import java.awt.Image;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BulletRain extends BulletPattern {
+import battle.bullets.Bullet;
+import battle.bullets.BulletPattern;
+
+public class Rain extends BulletPattern {
    private static final int SPAWN_EVERY_TICKS = 10;
    private final Image bulletSprite;
 
-   public BulletRain(int arenaWidth, int arenaHeight, Image bulletSprite, double density) {
+   public Rain(int arenaWidth, int arenaHeight, Image bulletSprite, double density) {
       super(arenaWidth, arenaHeight, 300, density);
       this.bulletSprite = bulletSprite;
    }

@@ -1,5 +1,6 @@
 package battle.bullets;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,11 @@ public abstract class BulletPattern {
    // With density 1.0 this is the same as tick % baseTicks == 0; fractional densities work too.
    protected final boolean spawnsOn(int tick, int baseTicks) {
       return Math.floor(tick * this.density / baseTicks) != Math.floor((tick - 1) * this.density / baseTicks);
+   }
+
+   // The one place new patterns build bullets. A null sprite draws a plain white box.
+   protected final Bullet makeBullet(double x, double y, double vx, double vy, int width, int height, int damage, Image sprite) {
+      return new Bullet(x, y, vx, vy, width, height, damage, sprite);
    }
 
    public boolean isOver() {

@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 import ui.StatusBar;
 import ui.UIUtils;
 
-// The row under the battle box: "NAME   LEVEL x/15", the HP label, the HP bar and the HP numbers.
+// The row under the battle box: "NAME   LEVEL x", the HP label, the HP bar and the HP numbers.
 // It only displays what it's given; BattlePanel owns the actual hp and level.
 class PlayerStatusRow extends JPanel {
    private static final int TOP = 599;
@@ -13,15 +13,13 @@ class PlayerStatusRow extends JPanel {
    private static final int LEFT = 25;
 
    private final String playerName;
-   private final int totalLevels;
    private final JLabel statsLabel = UIUtils.createLabel("");
    private final JLabel hpMarker = UIUtils.createLabel("HP");
    private final StatusBar healthBar;
    private final JLabel hpNumbers = UIUtils.createLabel("");
 
-   PlayerStatusRow(String playerName, int totalLevels, int stageWidth, int level, int hp, int maxHp) {
+   PlayerStatusRow(String playerName, int stageWidth, int level, int hp, int maxHp) {
       this.playerName = playerName;
-      this.totalLevels = totalLevels;
       this.setLayout(null);
       this.setOpaque(false);
       this.setBounds(0, TOP, stageWidth, ROW_H);
@@ -34,7 +32,7 @@ class PlayerStatusRow extends JPanel {
    }
 
    void update(int level, int hp, int maxHp) {
-      this.statsLabel.setText(this.playerName + "   LEVEL " + level + "/" + this.totalLevels);
+      this.statsLabel.setText(this.playerName + "   LEVEL " + level);
       this.hpNumbers.setText(hp + " / " + maxHp);
       int x = LEFT;
       x = this.placeLabel(this.statsLabel, x) + 24;
