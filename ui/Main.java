@@ -52,7 +52,6 @@ public class Main extends JFrame {
    }
 
    public static void main(String[] args) {
-      // Uploads accounts and scores saved on this device whenever the server is reachable.
       SyncService.start();
       SwingUtilities.invokeLater(Main::new);
    }

@@ -9,6 +9,7 @@ import battle.bullets.BulletPattern;
 
 public class Rain extends BulletPattern {
    private static final int SPAWN_EVERY_TICKS = 10;
+   private static final double FALL_SPEED = 3.5;
    private final Image bulletSprite;
 
    public Rain(int arenaWidth, int arenaHeight, Image bulletSprite, double density) {
@@ -20,10 +21,12 @@ public class Rain extends BulletPattern {
    protected void spawnTick(int elapsedTicks) {
       if (this.spawnsOn(elapsedTicks, SPAWN_EVERY_TICKS)) {
          double x = ThreadLocalRandom.current().nextDouble(0.0, Math.max(1, this.arenaWidth - 20));
+         
+         // Uses the hard-coded speed constant for linear downward movement
          if (this.bulletSprite != null) {
-            this.bullets.add(new Bullet(x, -20.0, 0.0, 4.5, 20, 20, 2, this.bulletSprite));
+            this.bullets.add(new Bullet(x, -20.0, 0.0, FALL_SPEED, 20, 20, 2, this.bulletSprite));
          } else {
-            this.bullets.add(new Bullet(x, -20.0, 0.0, 4.5, 20, 20, 2, Color.WHITE));
+            this.bullets.add(new Bullet(x, -20.0, 0.0, FALL_SPEED, 20, 20, 2, Color.WHITE));
          }
       }
    }

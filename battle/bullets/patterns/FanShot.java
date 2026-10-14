@@ -7,7 +7,7 @@ import battle.bullets.BulletPattern;
 
 // Every so often a spot on the top wall fires a fan of bullets that spread out as they fall.
 public class FanShot extends BulletPattern {
-   private static final int SHOT_EVERY_TICKS = 80;
+   private static final int SHOT_EVERY_TICKS = 60;
    private static final int BULLETS_PER_FAN = 5;
    private static final double SPREAD_DEGREES = 20.0;
    private static final int BULLET_SIZE = 16;

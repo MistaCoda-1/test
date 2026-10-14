@@ -6,16 +6,14 @@ package battle.bullets;
 public final class BulletScaling {
    // Extra bullets per level, as a fraction of the base amount.
    // 0.05 -> level 2 has 5% more bullets than level 1, level 11 has 50% more, level 21 has twice as many.
-   // Set it to 0 to turn scaling off (handy for testing).
+   // Set it to 0 to turn scaling off (for testing).
    public static final double EXTRA_PER_LEVEL = 0.05;
 
-   // Upper limit for the multiplier (2.0 = twice the base amount of bullets).
    public static final double MAX_MULTIPLIER = 2.0;
 
    private BulletScaling() {
    }
 
-   // 1.0 = base amount of bullets, 2.0 = twice as many.
    public static double multiplier(int level) {
       double multiplier = 1.0 + EXTRA_PER_LEVEL * (level - 1);
       return Math.max(1.0, Math.min(MAX_MULTIPLIER, multiplier));

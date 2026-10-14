@@ -94,7 +94,7 @@ public class ArenaPanel extends JPanel {
                dy *= 0.7071;
             }
 
-            int activeSpeed = this.focusActive ? 3 : 6;
+            int activeSpeed = this.focusActive ? 2 : 4;
             this.soulX = this.soulX + (int)Math.round(dx * activeSpeed);
             this.soulY = this.soulY + (int)Math.round(dy * activeSpeed);
             int maxW = this.getWidth() - this.heartWidth - 3;
@@ -103,8 +103,8 @@ public class ArenaPanel extends JPanel {
             this.soulY = Math.clamp((long)this.soulY, 3, maxH);
             this.pattern.update();
             this.checkCollisions();
+            
             if (this.pattern == null) {
-               // The hit ended the turn (game over).
                return;
             }
 

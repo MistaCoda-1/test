@@ -32,7 +32,7 @@ class PlayerStatusRow extends JPanel {
    }
 
    void update(int level, int hp, int maxHp) {
-      this.statsLabel.setText(this.playerName + "   LEVEL " + level);
+      this.statsLabel.setText(this.playerName + "   LEVEL " + level + " / ENDLESS");
       this.hpNumbers.setText(hp + " / " + maxHp);
       int x = LEFT;
       x = this.placeLabel(this.statsLabel, x) + 24;

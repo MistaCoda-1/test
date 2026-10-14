@@ -2,41 +2,35 @@ package battle;
 
 import battle.bullets.BulletPattern;
 import battle.bullets.BulletScaling;
+
 import db.LeaderboardDAO;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.IntConsumer;
-import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
-import javax.swing.border.EmptyBorder;
+
 import ui.GameSettings;
 import ui.Main;
 import ui.UIUtils;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.sql.SQLException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.IntConsumer;
+
+import javax.imageio.ImageIO;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 public class BattlePanel extends JPanel {
    private static final int STAGE_W = 960;
 
-   private static final int ACTS_TO_SPARE = 2;
+   private static final int ACTS_TO_SPARE = 4;
 
    private BattlePanel.BattleState state = BattlePanel.BattleState.PLAYER_TURN;
 
@@ -58,9 +52,12 @@ public class BattlePanel extends JPanel {
    Font gameFont = UIUtils.undertaleFont;
 
    private final String playerName;
-   private int currentLvl = 1;
-   private int currentHp = 20;
-   private int maxHp = 20;
+
+   private int enemyNumber = 0;
+   private int fightsWithEnemy = 1;
+   private int currentLvl = 20;
+   private int currentHp = 30;
+   private int maxHp = 30;
 
    private int enemyHp;
    private int enemyMaxHp;
@@ -73,30 +70,36 @@ public class BattlePanel extends JPanel {
    private PatternPicker patternPicker;
 
    private ArenaPanel arena;
-   
+
    private int spareProgress = 0;
 
    private final List<Item> inventory = new ArrayList<>(List.of(
-      new Item("Monster Candy", 10), new Item("Spider Donut", 12), new Item("Butterscotch Pie", 99)
-   ));
+         new Item("Monster White - 10HP", 10), new Item("Malunggay Pandesal - 20HP", 20), new Item("Sting - 20HP", 20),
+         new Item("KCO Chips - 30HP", 30)));
 
    private JLabel[] menuLabels;
    private int menuIndex;
    private IntConsumer onMenuPick;
-   private final ImageIcon blankIcon = new ImageIcon(new BufferedImage(this.heartIcon.getIconWidth(), this.heartIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB));
+   private final ImageIcon blankIcon = new ImageIcon(
+         new BufferedImage(this.heartIcon.getIconWidth(), this.heartIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB));
    private final Main main;
 
    public BattlePanel(Main main) {
       this.main = main;
       this.playerName = main.getCurrentUser();
+
       this.setLayout(null);
       this.setBackground(Color.BLACK);
       this.stage.setBackground(Color.BLACK);
       this.add(this.stage);
+
       this.enemyMaxHp = this.currentEnemy().maxHp();
       this.enemyHp = this.enemyMaxHp;
+
       this.loadBullet();
+
       this.patternPicker = new PatternPicker(300, 250, this.BULLET_SPRITE, this.needleSprite);
+      
       this.buildEnemy();
       this.buildDialogueBox();
       this.buildPlayerStatus();
@@ -139,7 +142,8 @@ public class BattlePanel extends JPanel {
 
    private void buildDialogueBox() {
       this.dialoguePanel.setBackground(Color.BLACK);
-      this.dialoguePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE), new EmptyBorder(15, 20, 15, 20)));
+      this.dialoguePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE),
+            new EmptyBorder(15, 20, 15, 20)));
       this.dialogueLabel = this.makeLabel(this.currentEnemy().greeting());
       this.dialogueLabel.setHorizontalAlignment(0);
       this.dialoguePanel.add(this.dialogueLabel, "Center");
@@ -152,7 +156,7 @@ public class BattlePanel extends JPanel {
    }
 
    private void buildCommandButtons() {
-      String[] names = new String[]{"FIGHT", "ACT", "ITEM", "MERCY"};
+      String[] names = new String[] { "FIGHT", "ACT", "ITEM", "MERCY" };
       this.buttons = new CommandButton[names.length];
       int totalW = names.length * 212 + (names.length - 1) * 20;
       int startX = (960 - totalW) / 2;
@@ -163,7 +167,8 @@ public class BattlePanel extends JPanel {
          this.stage.add(this.buttons[i]);
       }
 
-      this.commandActions = new Runnable[]{this::startFightSequence, this::actButton, this::itemButton, this::startMercy};
+      this.commandActions = new Runnable[] { this::startFightSequence, this::actButton, this::itemButton,
+            this::startMercy };
    }
 
    private void buildKeyBindings() {
@@ -264,16 +269,18 @@ public class BattlePanel extends JPanel {
       return animator;
    }
 
-   // ACT: "Check" shows the enemy's info; the enemy's own act counts toward sparing it.
+   // ACT: "Check" shows the enemy's info; the enemy's own act counts toward
+   // sparing it.
    private void actButton() {
       Enemy enemy = this.currentEnemy();
-      this.showMenu(new String[]{"Check", enemy.actName()}, choice -> {
+      this.showMenu(new String[] { "Check", enemy.actName() }, choice -> {
          if (choice == 0) {
             this.startDialogue(this::showBattleBox, enemy.checkText());
          } else {
             this.spareProgress++;
             if (this.spareProgress >= ACTS_TO_SPARE) {
-               this.startDialogue(this::showBattleBox, enemy.actLine(), enemy.name() + " doesn't want to fight anymore.");
+               this.startDialogue(this::showBattleBox, enemy.actLine(),
+                     enemy.name() + " doesn't want to fight anymore.");
             } else {
                this.startDialogue(this::showBattleBox, enemy.actLine());
             }
@@ -293,7 +300,8 @@ public class BattlePanel extends JPanel {
          Item item = this.inventory.remove(choice);
          int before = this.currentHp;
          this.updatePlayerStats(this.currentHp + item.heal(), this.currentLvl);
-         String result = this.currentHp >= this.maxHp ? "Your HP was maxed out." : "You recovered " + (this.currentHp - before) + " HP!";
+         String result = this.currentHp >= this.maxHp ? "Your HP was maxed out."
+               : "You recovered " + (this.currentHp - before) + " HP!";
          this.startDialogue(this::showBattleBox, "You ate the " + item.name() + ".", result);
       });
    }
@@ -376,7 +384,7 @@ public class BattlePanel extends JPanel {
    }
 
    private void onHitEnemy(int damage) {
-      this.enemyHp = Math.clamp((long)(this.enemyHp - damage), 0, this.enemyMaxHp);
+      this.enemyHp = Math.clamp((long) (this.enemyHp - damage), 0, this.enemyMaxHp);
       this.enemyView.showHp(this.enemyHp, this.enemyMaxHp);
       Timer resultPause = new Timer(1200, e -> {
          if (this.enemyHp <= 0) {
@@ -409,7 +417,8 @@ public class BattlePanel extends JPanel {
 
    private void onPlayerDefeated() {
       this.arena.endTurn();
-      this.startDialogue(this::returnToMainMenu, "Your SOUL shatters...", "GAME OVER. You reached LEVEL " + this.currentLvl + ".");
+      this.startDialogue(this::returnToMainMenu, "Your SOUL shatters...",
+            "GAME OVER. You reached LEVEL " + this.currentLvl + ".");
    }
 
    private void saveProgress() {
@@ -446,12 +455,8 @@ public class BattlePanel extends JPanel {
       this.updateSelection();
    }
 
-   private int fightNumber() {
-      return Enemies.fightNumber(this.currentLvl);
-   }
-
    private Enemy currentEnemy() {
-      return Enemies.forLevel(this.currentLvl);
+      return Enemies.at(this.enemyNumber);
    }
 
    private void loadEnemy() {
@@ -467,25 +472,33 @@ public class BattlePanel extends JPanel {
       this.onEnemyDefeated(false);
    }
 
-   // Shared by killing (FIGHT) and sparing (MERCY): both clear the level. The game is endless,
+   // Shared by killing (FIGHT) and sparing (MERCY): both clear the level. The game
+   // is endless,
    // so there is no last level; a run only ends when the player is defeated.
    private void onEnemyDefeated(boolean spared) {
-      boolean finalKill = this.fightNumber() == Enemies.FIGHTS_PER_ENEMY;
       String name = this.currentEnemy().name();
-      // Level up: record the new highest level. HP carries over, there is no free heal between levels.
+      // Sparing ends the whole stretch with this enemy; killing only does after its
+      // last fight.
+      boolean nextEnemy = spared || this.fightsWithEnemy == Enemies.FIGHTS_PER_ENEMY;
+      // Level up: record the new highest level. HP carries over, there is no free
+      // heal between levels.
       this.updatePlayerStats(this.currentHp, this.currentLvl + 1);
       this.saveProgress();
-      if (finalKill) {
-         String first = spared ? "You spared " + name + ". It hops away peacefully." : "The enemy falls over and does not get back up.";
+      if (nextEnemy) {
+         this.enemyNumber++;
+         this.fightsWithEnemy = 1;
+         String first = spared ? "You spared " + name + ". It hops away peacefully."
+               : "The enemy falls over and does not get back up.";
          this.startDialogue(() -> {
             this.loadEnemy();
             this.startDialogue(this::restoreDialogueBox, "You move on, but something else waits ahead.");
          }, first);
       } else {
-         String first = spared ? "You spared " + name + ". You move on to the next level." : "The enemy falls over and you move on to the next level.";
+         this.fightsWithEnemy++;
+         String first = "The enemy falls over and you move on to the next level.";
          this.startDialogue(() -> {
             this.loadEnemy();
-            this.startDialogue(this::restoreDialogueBox, "It seems it still wanted to fight and followed you.");
+            this.startDialogue(this::restoreDialogueBox, "It seems it still had some fight in it and followed you.");
          }, first);
       }
    }
@@ -494,7 +507,6 @@ public class BattlePanel extends JPanel {
       return this.spareProgress >= ACTS_TO_SPARE || this.enemyHp <= this.enemyMaxHp / 4;
    }
 
-   // A random pattern each turn; the higher the level, the more bullets (tuned in BulletScaling).
    private BulletPattern createPattern() {
       return this.patternPicker.next(BulletScaling.multiplier(this.currentLvl));
    }
@@ -541,7 +553,7 @@ public class BattlePanel extends JPanel {
    }
 
    public void updatePlayerStats(int newHp, int level) {
-      this.currentHp = Math.clamp((long)newHp, 0, this.maxHp);
+      this.currentHp = Math.clamp((long) newHp, 0, this.maxHp);
       this.currentLvl = Math.max(1, level);
       if (this.playerStatus != null) {
          this.playerStatus.update(this.currentLvl, this.currentHp, this.maxHp);
