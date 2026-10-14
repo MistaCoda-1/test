@@ -12,10 +12,10 @@ import java.util.regex.Pattern;
 public class AccountDAO {
    private static final Pattern VALID_USERNAME = Pattern.compile("[A-Za-z0-9_]{3,20}");
    private static final int MIN_PASSWORD_LENGTH = 4;
-   static final String FIND_HASH_SQL = "SELECT pasword_hash FROM users WHERE username = ?";
-   static final String CREATE_USER_SQL = "INSERT INTO users (username, pasword_hash) VALUES (?, ?)";
+   static final String FIND_HASH_SQL = "SELECT password_hash FROM users WHERE username = ?";
+   static final String CREATE_USER_SQL = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
    // Older builds created users with an empty hash when saving a score; let someone set a password on those.
-   static final String CLAIM_USER_SQL = "UPDATE users SET pasword_hash = ? WHERE username = ? AND pasword_hash = ''";
+   static final String CLAIM_USER_SQL = "UPDATE users SET password_hash = ? WHERE username = ? AND password_hash = ''";
 
    public enum RegisterResult {
       CREATED,

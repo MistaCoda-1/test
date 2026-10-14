@@ -69,7 +69,7 @@ public final class Database {
    }
 
    private static void initializeTables() throws SQLException {
-      String USERS_SQL = "CREATE TABLE IF NOT EXISTS users( uid INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50) NOT NULL UNIQUE, pasword_hash varchar(255) NOT NULL );";
+      String USERS_SQL = "CREATE TABLE IF NOT EXISTS users( uid INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50) NOT NULL UNIQUE, password_hash varchar(255) NOT NULL );";
       String PLAYERS_SQL = "CREATE TABLE IF NOT EXISTS players ( id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50) NOT NULL UNIQUE, level INT DEFAULT 0, FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE ON UPDATE CASCADE);";
 
       try (
