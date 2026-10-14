@@ -1,23 +1,10 @@
 package ui;
 
 import db.SyncService;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.Image;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
+import javax.swing.*;
 
 public class MainMenuPanel extends JPanel {
    JPanel menuPanel = new JPanel();
@@ -38,24 +25,28 @@ public class MainMenuPanel extends JPanel {
       this.main = main;
       this.setLayout(new BorderLayout());
       this.setBackground(Color.BLACK);
+
       this.menuPanel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 30));
       this.btnPanel.setLayout(new BoxLayout(this.btnPanel, 1));
-      // this.btnPanel.setOpaque(false);
-      // this.menuPanel.setOpaque(false);
-      // this.artPanel.setOpaque(false);
-      this.menuPanel.setBackground(Color.RED);
-      this.artPanel.setBackground(Color.BLUE);
+
+      this.btnPanel.setOpaque(false);
+      this.menuPanel.setOpaque(false);
+      this.artPanel.setOpaque(false);
+
       this.menuPanel.setLayout(new GridBagLayout());
       MenuButton startBtn = new MenuButton("START");
       MenuButton leaderboardBtn = new MenuButton("LEADERBOARD");
       MenuButton optionsBtn = new MenuButton("OPTIONS");
       MenuButton exitBtn = new MenuButton("LOG OUT");
+
       startBtn.setAlignmentX(0.5F);
       leaderboardBtn.setAlignmentX(0.5F);
       optionsBtn.setAlignmentX(0.5F);
       exitBtn.setAlignmentX(0.5F);
+
       this.buttons = new MenuButton[]{startBtn, leaderboardBtn, optionsBtn, exitBtn};
-      this.menuActions = new Runnable[]{main::showBattlePanel, this::showLeaderboard, this::optionsPlaceholder, main::showLogin};
+      this.menuActions = new Runnable[]{main::showBattlePanel, this::showLeaderboard, this::showOptions, main::showLogin};
+
       this.btnPanel.add(startBtn);
       this.btnPanel.add(Box.createVerticalStrut(16));
       this.btnPanel.add(leaderboardBtn);
@@ -63,12 +54,16 @@ public class MainMenuPanel extends JPanel {
       this.btnPanel.add(optionsBtn);
       this.btnPanel.add(Box.createVerticalStrut(16));
       this.btnPanel.add(exitBtn);
+
       this.btnPanel.setAlignmentX(0.5F);
       this.menuPanel.add(this.buildColumn());
+
       this.add(this.menuPanel, "West");
-      this.buildArt();
+      // this.buildArt();
       this.add(this.artPanel, "Center");
+
       this.updateSelection();
+
       InputMap inputMap = this.getInputMap(2);
       ActionMap actionMap = this.getActionMap();
       inputMap.put(KeyStroke.getKeyStroke("UP"), "moveUp");
@@ -127,7 +122,7 @@ public class MainMenuPanel extends JPanel {
       this.requestFocusInWindow();
    }
 
-   private void optionsPlaceholder() {
+   private void showOptions() {
       if (!this.optionsOpen) {
          this.optionsOpen = true;
          OptionsOverlay overlay = new OptionsOverlay(this::hideOptions);

@@ -55,7 +55,7 @@ public class BattlePanel extends JPanel {
 
    private int enemyNumber = 0;
    private int fightsWithEnemy = 1;
-   private int currentLvl = 20;
+   private int currentLvl = 1;
    private int currentHp = 30;
    private int maxHp = 30;
 
