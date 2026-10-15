@@ -13,29 +13,33 @@ import java.util.concurrent.ExecutionException;
 public class LoginPanel extends JPanel {
    private final JTextField textField = new JTextField(20);
    private final JPasswordField passwordField = new JPasswordField(20);
+
    private final JButton submitButton = new JButton("LOG IN");
    private final JButton createAccountButton = new JButton("CREATE ACCOUNT");
    private final JButton serverButton = new JButton("SERVER SETTINGS");
+
    private final ImageIcon logo = new ImageIcon(this.getClass().getResource("/resources/logo.png"));
    private final JLabel label = new JLabel(this.logo);
+
    JLabel loginStatusLabel = UIUtils.createLabel("");
    private final JLabel serverStatusLabel = UIUtils.createLabel("");
-   private final Main main;
 
+   private final Main main;
    public LoginPanel(Main main) {
       this.main = main;
       this.setLayout(new BoxLayout(this, 1));
       this.setBackground(Color.BLACK);
+
+      // User inputs
       UIUtils.styleInputField(this.textField);
       UIUtils.styleInputField(this.passwordField);
-      // The default bullet echo char is a tiny 4px dot in the 8-bit font, so typing looks like it does nothing.
       this.passwordField.setEchoChar('*');
+
       UIUtils.styleButton(this.submitButton);
       UIUtils.styleButton(this.createAccountButton);
       UIUtils.styleButton(this.serverButton);
       Font smallFont = UIUtils.undertaleFont.deriveFont(16.0F);
       
-      // Sizes adjusted to fit nicely side-by-side
       this.submitButton.setPreferredSize(new Dimension(140, 40));
       this.submitButton.setMaximumSize(new Dimension(140, 40));
       this.createAccountButton.setPreferredSize(new Dimension(210, 40));
@@ -45,15 +49,17 @@ public class LoginPanel extends JPanel {
       this.serverButton.setPreferredSize(new Dimension(220, 30));
       this.serverButton.setMaximumSize(new Dimension(220, 30));
       this.serverStatusLabel.setFont(smallFont);
+
       JLabel usernameLabel = UIUtils.createLabel("USERNAME: ");
       JLabel passwordLabel = UIUtils.createLabel("PASSWORD: ");
       JPanel userRow = this.createRow(usernameLabel, this.textField);
       JPanel passRow = this.createRow(passwordLabel, this.passwordField);
+
       this.label.setAlignmentX(0.5F);
       userRow.setAlignmentX(0.5F);
       passRow.setAlignmentX(0.5F);
       
-      // Row to group login and account buttons horizontally
+      // Used to align submit and create button
       JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
       buttonRow.setOpaque(false);
       buttonRow.setMaximumSize(new Dimension(400, 45));
@@ -68,16 +74,20 @@ public class LoginPanel extends JPanel {
       this.add(Box.createVerticalStrut(5));
       this.add(passRow);
       this.add(Box.createVerticalStrut(20));
-      this.add(buttonRow); // Inserted horizontally aligned buttons here
+
+      this.add(buttonRow);
       this.add(Box.createVerticalStrut(15));
       this.loginStatusLabel.setAlignmentX(0.5F);
       this.add(this.loginStatusLabel);
       this.add(Box.createVerticalStrut(10));
+
       this.serverStatusLabel.setAlignmentX(0.5F);
       this.add(this.serverStatusLabel);
       this.add(Box.createVerticalStrut(5));
       this.add(this.serverButton);
       this.add(Box.createVerticalGlue());
+
+      // Action listeners, accepts mouse input only on the login page
       this.submitButton.addActionListener(e -> this.login());
       this.textField.addActionListener(e -> this.login());
       this.passwordField.addActionListener(e -> this.login());
@@ -121,7 +131,8 @@ public class LoginPanel extends JPanel {
       }).execute();
    }
 
-   // Works offline too: the account is saved on this device and uploaded when the server is reachable.
+   // Works offline, the account is saved on this device and uploaded when the server is available
+   // LocalStore functionality
    private void createAccount() {
       String username = this.textField.getText().trim();
       char[] password = this.passwordField.getPassword();
@@ -169,7 +180,7 @@ public class LoginPanel extends JPanel {
       this.serverButton.setEnabled(!busy);
    }
 
-   // Checks in the background whether this device can reach the server in ServerSettings.
+   // Checks if server is reachable
    private void checkServer() {
       this.serverStatusLabel.setForeground(Color.LIGHT_GRAY);
       this.serverStatusLabel.setText("SERVER " + ServerSettings.getHost() + ": CHECKING...");

@@ -34,8 +34,10 @@ public class FightMinigamePanel extends JPanel {
             this.repaint();
          }
       });
+
       InputMap inputMap = this.getInputMap(2);
       ActionMap actionMap = this.getActionMap();
+      
       inputMap.put(KeyStroke.getKeyStroke(90, 0), "lockIn");
       actionMap.put("lockIn", new AbstractAction() {
          @Override

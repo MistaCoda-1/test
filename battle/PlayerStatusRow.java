@@ -5,8 +5,6 @@ import javax.swing.JPanel;
 import ui.StatusBar;
 import ui.UIUtils;
 
-// The row under the battle box: "NAME   LEVEL x", the HP label, the HP bar and the HP numbers.
-// It only displays what it's given; BattlePanel owns the actual hp and level.
 class PlayerStatusRow extends JPanel {
    private static final int TOP = 599;
    private static final int ROW_H = 30;

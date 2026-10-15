@@ -11,8 +11,6 @@ import javax.swing.JPanel;
 import ui.StatusBar;
 import ui.UIUtils;
 
-// The top of the battle screen: the enemy's grid background and sprite, with its HP bar underneath.
-// Placed at the top-left of the stage and as wide as the stage, so its children use stage coordinates.
 class EnemyView extends JPanel {
    private static final int HEIGHT = 322;
    private static final int PANEL_W = 700;
@@ -66,7 +64,6 @@ class EnemyView extends JPanel {
       this.hpBar.updateHp(hp, maxHp);
    }
 
-   // Multiplies every pixel by the tint color (the enemy sprite is white, so it simply becomes that color).
    private static Image tinted(Image image, Color tint) {
       RGBImageFilter filter = new RGBImageFilter() {
          @Override

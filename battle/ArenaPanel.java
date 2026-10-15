@@ -10,10 +10,12 @@ import java.awt.*;
 import javax.swing.*;
 
 public class ArenaPanel extends JPanel {
+   // Used to draw the player
    private final Image heartImage;
    private final int heartWidth;
    private final int heartHeight;
 
+   // Used to center the player
    private int soulX;
    private int soulY;
 
@@ -24,11 +26,13 @@ public class ArenaPanel extends JPanel {
    private boolean moveLeft;
    private boolean moveRight;
 
+   // Focus logic from undertale
+   // Holding X slows the player down
    private boolean focusActive;
 
    private final IntConsumer onPlayerHit;
    private final Runnable onTurnEnd;
-   
+
    private BulletPattern pattern;
    private int invincibleTicks = 0;
 
@@ -46,16 +50,17 @@ public class ArenaPanel extends JPanel {
       this.setupInputMappings();
    }
 
+   // Paints/Fires the bullet pattern
    @Override
    protected void paintComponent(Graphics g) {
       super.paintComponent(g);
       if (this.pattern != null) {
          for (Bullet bullet : this.pattern.getBullets()) {
             if (bullet.sprite != null) {
-               g.drawImage(bullet.sprite, (int)bullet.x, (int)bullet.y, bullet.width, bullet.height, this);
+               g.drawImage(bullet.sprite, (int) bullet.x, (int) bullet.y, bullet.width, bullet.height, this);
             } else {
                g.setColor(bullet.color);
-               g.fillRect((int)bullet.x, (int)bullet.y, bullet.width, bullet.height);
+               g.fillRect((int) bullet.x, (int) bullet.y, bullet.width, bullet.height);
             }
          }
       }
@@ -66,6 +71,12 @@ public class ArenaPanel extends JPanel {
       }
    }
 
+/**
+ * User movement done with dx and dy (change in x/change in y)
+ * When a key is held it constantly increments/decrements dx and/or dy
+ * which translates to player movement.
+ * Also sets arena bounds so the player doesn't go out of bounds.
+ */
    public void startTurn(BulletPattern pattern) {
       if (this.gameLoopTimer == null || !this.gameLoopTimer.isRunning()) {
          this.pattern = pattern;
@@ -95,15 +106,15 @@ public class ArenaPanel extends JPanel {
             }
 
             int activeSpeed = this.focusActive ? 2 : 4;
-            this.soulX = this.soulX + (int)Math.round(dx * activeSpeed);
-            this.soulY = this.soulY + (int)Math.round(dy * activeSpeed);
+            this.soulX = this.soulX + (int) Math.round(dx * activeSpeed);
+            this.soulY = this.soulY + (int) Math.round(dy * activeSpeed);
             int maxW = this.getWidth() - this.heartWidth - 3;
             int maxH = this.getHeight() - this.heartHeight - 3;
-            this.soulX = Math.clamp((long)this.soulX, 3, maxW);
-            this.soulY = Math.clamp((long)this.soulY, 3, maxH);
+            this.soulX = Math.clamp((long) this.soulX, 3, maxW);
+            this.soulY = Math.clamp((long) this.soulY, 3, maxH);
             this.pattern.update();
             this.checkCollisions();
-            
+
             if (this.pattern == null) {
                return;
             }
@@ -122,11 +133,16 @@ public class ArenaPanel extends JPanel {
       }
    }
 
+/**
+ * Defines the players hitbox then checks if any of the bullets in the current pattern
+ * enters/intersects `heartBounds` then registers it as a hit. Very cool!
+ */
    private void checkCollisions() {
       if (this.invincibleTicks > 0) {
          this.invincibleTicks--;
       } else {
-         Rectangle heartBounds = new Rectangle(this.soulX + 4, this.soulY + 4, this.heartWidth - 8, this.heartHeight - 8);
+         Rectangle heartBounds = new Rectangle(this.soulX + 4, this.soulY + 4, this.heartWidth - 8,
+               this.heartHeight - 8);
 
          for (Bullet bullet : this.pattern.getBullets()) {
             if (heartBounds.intersects(bullet.getBounds())) {

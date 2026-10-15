@@ -4,7 +4,7 @@ import java.awt.Image;
 
 import battle.bullets.BulletPattern;
 
-// A shooter slides back and forth along the top wall, dropping a steady stream of bullets as it goes.
+// Bullet rain slides back and forth along the top wall, dropping a steady stream of bullets as it goes.
 public class SweepingStream extends BulletPattern {
    private static final int SPAWN_EVERY_TICKS = 15;
    private static final int SWEEP_TICKS = 120;
@@ -21,7 +21,6 @@ public class SweepingStream extends BulletPattern {
    @Override
    protected void spawnTick(int elapsedTicks) {
       if (this.spawnsOn(elapsedTicks, SPAWN_EVERY_TICKS)) {
-         // 0 -> 1 -> 0 over SWEEP_TICKS: the shooter's position along the wall as a fraction of its width.
          double phase = (elapsedTicks % SWEEP_TICKS) / (double)SWEEP_TICKS;
          double position = phase < 0.5 ? phase * 2 : 2 - phase * 2;
          double x = position * (this.arenaWidth - BULLET_SIZE);

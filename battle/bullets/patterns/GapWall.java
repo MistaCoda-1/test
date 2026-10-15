@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import battle.bullets.BulletPattern;
 
 // A wall of bullets falls from the top with a gap in it. Each gap is only a few steps away from the last
-// one, so the player can always get through.
+// one, so the player can always get through
 public class GapWall extends BulletPattern {
    private static final int SPAWN_EVERY_TICKS = 55;
    private static final int SLOT = 20;

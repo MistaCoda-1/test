@@ -8,10 +8,9 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.DoubleFunction;
 
-// Hands out a random bullet pattern for each enemy turn, never the same one twice in a row.
-// To add a pattern: write the BulletPattern subclass and add one line to the pool below.
+// Picks a bullet pattern for each enemy turn, never the same one twice in a row.
 class PatternPicker {
-   // Each entry builds a fresh pattern for a given density (see BulletScaling).
+   // Each entry builds a new pattern for a given density (see BulletScaling).
    private final List<DoubleFunction<BulletPattern>> pool;
    private int lastIndex = -1;
 

@@ -5,11 +5,10 @@ package battle.bullets;
 // cap is what keeps an endless run from becoming impossible.
 public final class BulletScaling {
    // Extra bullets per level, as a fraction of the base amount.
-   // 0.05 -> level 2 has 5% more bullets than level 1, level 11 has 50% more, level 21 has twice as many.
-   // Set it to 0 to turn scaling off (for testing).
+   // Set to 0 to turn scaling off (for testing).
    public static final double EXTRA_PER_LEVEL = 0.05;
 
-   public static final double MAX_MULTIPLIER = 2.0;
+   public static final double MAX_MULTIPLIER = 4.5;
 
    private BulletScaling() {
    }

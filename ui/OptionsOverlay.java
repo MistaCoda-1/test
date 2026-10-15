@@ -8,18 +8,11 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-// OPTIONS screen shown over the main menu: difficulty setting and a list of controls.
+// Options panel shown over the main menu: difficulty setting and a list of controls
+// Mostly the same as the Leaderboard
 public class OptionsOverlay extends UIUtils.DimmedOverlay {
    private final JLabel difficultyLabel = UIUtils.createLabel("");
 
@@ -56,11 +49,17 @@ public class OptionsOverlay extends UIUtils.DimmedOverlay {
       this.add(box);
       this.refresh();
 
+      this.setupKeyBindings(onClose);
+   }
+
+   private void setupKeyBindings(final Runnable onClose) {
       InputMap inputMap = this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
       ActionMap actionMap = this.getActionMap();
+      
       inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, 0), "close");
       inputMap.put(KeyStroke.getKeyStroke("LEFT"), "prev");
       inputMap.put(KeyStroke.getKeyStroke("RIGHT"), "next");
+      
       actionMap.put("close", new AbstractAction() {
          @Override
          public void actionPerformed(ActionEvent e) {

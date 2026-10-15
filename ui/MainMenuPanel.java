@@ -8,18 +8,22 @@ import javax.swing.*;
 
 public class MainMenuPanel extends JPanel {
    JPanel menuPanel = new JPanel();
-   JPanel artPanel = new JPanel();
+   JPanel artPanel = new JPanel(); // Unused, no time + got bigger fish to fry
    JPanel btnPanel = new JPanel();
+
    private int selectedBtnIndex = 0;
    private MenuButton[] buttons;
    private Runnable[] menuActions;
    private boolean leaderboardOpen = false;
    private boolean optionsOpen = false;
-   private final Main main;
+
    private static final Font SMALL_FONT = UIUtils.undertaleFont.deriveFont(16.0F);
    private static final Color OFFLINE_COLOR = new Color(255, 140, 60);
+
    private final JLabel statusLabel = new JLabel(" ");
    private final Timer statusTimer = new Timer(2000, e -> this.refreshStatus());
+
+   private final Main main;
 
    public MainMenuPanel(Main main) {
       this.main = main;
@@ -44,8 +48,9 @@ public class MainMenuPanel extends JPanel {
       optionsBtn.setAlignmentX(0.5F);
       exitBtn.setAlignmentX(0.5F);
 
-      this.buttons = new MenuButton[]{startBtn, leaderboardBtn, optionsBtn, exitBtn};
-      this.menuActions = new Runnable[]{main::showBattlePanel, this::showLeaderboard, this::showOptions, main::showLogin};
+      this.buttons = new MenuButton[] { startBtn, leaderboardBtn, optionsBtn, exitBtn };
+      this.menuActions = new Runnable[] { main::showBattlePanel, this::showLeaderboard, this::showOptions,
+            main::showLogin };
 
       this.btnPanel.add(startBtn);
       this.btnPanel.add(Box.createVerticalStrut(16));
@@ -63,12 +68,20 @@ public class MainMenuPanel extends JPanel {
       this.add(this.artPanel, "Center");
 
       this.updateSelection();
+      setupKeyBindings();
+      
+      this.setVisible(true);
+   }
 
+   private void setupKeyBindings() {
+      // Accepts user input with (↑, ↓, Z)
       InputMap inputMap = this.getInputMap(2);
       ActionMap actionMap = this.getActionMap();
+
       inputMap.put(KeyStroke.getKeyStroke("UP"), "moveUp");
       inputMap.put(KeyStroke.getKeyStroke("DOWN"), "moveDown");
       inputMap.put(KeyStroke.getKeyStroke(90, 0), "select");
+
       actionMap.put("moveUp", new AbstractAction() {
          @Override
          public void actionPerformed(ActionEvent e) {
@@ -77,11 +90,11 @@ public class MainMenuPanel extends JPanel {
                if (MainMenuPanel.this.selectedBtnIndex < 0) {
                   MainMenuPanel.this.selectedBtnIndex = MainMenuPanel.this.buttons.length - 1;
                }
-
                MainMenuPanel.this.updateSelection();
             }
          }
       });
+
       actionMap.put("moveDown", new AbstractAction() {
          @Override
          public void actionPerformed(ActionEvent e) {
@@ -90,11 +103,11 @@ public class MainMenuPanel extends JPanel {
                if (MainMenuPanel.this.selectedBtnIndex > MainMenuPanel.this.buttons.length - 1) {
                   MainMenuPanel.this.selectedBtnIndex = 0;
                }
-
                MainMenuPanel.this.updateSelection();
             }
          }
       });
+
       actionMap.put("select", new AbstractAction() {
          @Override
          public void actionPerformed(ActionEvent e) {
@@ -103,7 +116,6 @@ public class MainMenuPanel extends JPanel {
             }
          }
       });
-      this.setVisible(true);
    }
 
    private void showLeaderboard() {
@@ -137,14 +149,15 @@ public class MainMenuPanel extends JPanel {
       this.requestFocusInWindow();
    }
 
-   // Logo and player name above the buttons; sync status and controls below, matching the login screen.
+   // Logo and player name above the buttons; sync status and controls below,
+   // matching the login screen.
    private JPanel buildColumn() {
       JPanel column = new JPanel();
       column.setLayout(new BoxLayout(column, 1));
       column.setOpaque(false);
       ImageIcon logo = new ImageIcon(this.getClass().getResource("/resources/logo.png"));
       int logoW = 340;
-      int logoH = (int)Math.round((double)logo.getIconHeight() / logo.getIconWidth() * logoW);
+      int logoH = (int) Math.round((double) logo.getIconHeight() / logo.getIconWidth() * logoW);
       JLabel logoLabel = new JLabel(new ImageIcon(logo.getImage().getScaledInstance(logoW, logoH, Image.SCALE_SMOOTH)));
       logoLabel.setAlignmentX(0.5F);
       JLabel welcome = UIUtils.createLabel("WELCOME, " + this.main.getCurrentUser());
@@ -167,7 +180,7 @@ public class MainMenuPanel extends JPanel {
       return column;
    }
 
-   // Shows whether progress is reaching the server or waiting on this device.
+   // Shows whether progress is reaching the server or waiting on this device
    private void refreshStatus() {
       boolean online = SyncService.isOnline();
       int pending = SyncService.pendingCount();
@@ -201,11 +214,13 @@ public class MainMenuPanel extends JPanel {
       super.removeNotify();
    }
 
+   // Commented out in constructor, was supposed to be splash art.
    private void buildArt() {
       ImageIcon original = new ImageIcon(this.getClass().getResource("/resources/mikudayo.png"));
       int targetH = 640;
-      int targetW = (int)Math.round((double)original.getIconWidth() / original.getIconHeight() * targetH);
-      JLabel art = new JLabel(new ImageIcon(original.getImage().getScaledInstance(targetW, targetH, Image.SCALE_SMOOTH)));
+      int targetW = (int) Math.round((double) original.getIconWidth() / original.getIconHeight() * targetH);
+      JLabel art = new JLabel(
+            new ImageIcon(original.getImage().getScaledInstance(targetW, targetH, Image.SCALE_SMOOTH)));
       this.artPanel.setLayout(new GridBagLayout());
       this.artPanel.add(art);
    }

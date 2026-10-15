@@ -7,13 +7,16 @@ import java.awt.Graphics2D;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+// Re-usable class for animating the dialogue box.
 public class AnimateBox extends JPanel {
+   // Animation parameters
    private final int startWidth;
    private final int startHeight;
-
    private final int targetWidth;
    private final int targetHeight;
 
+   // Checks if the animation loop is complete
+   // Triggers when start W/H reacheds target W/H
    private final Runnable onComplete;
 
    private int boxWidth;

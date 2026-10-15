@@ -16,29 +16,20 @@ import java.awt.event.MouseAdapter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-// SERVER SETTINGS screen shown over the login screen, styled like the rest of the game.
+// SERVER SETTINGS panel shown over the login panel, styled like the rest of the game
 public class ServerSettingsOverlay extends UIUtils.DimmedOverlay {
    private static final Font FIELD_FONT = UIUtils.undertaleFont.deriveFont(20.0F);
    private static final Font SMALL_FONT = UIUtils.undertaleFont.deriveFont(16.0F);
+
    private final JTextField hostField = new JTextField(ServerSettings.getHost());
    private final JTextField portField = new JTextField(String.valueOf(ServerSettings.getPort()));
    private final JTextField userField = new JTextField(ServerSettings.getUser());
    private final JPasswordField passwordField = new JPasswordField(ServerSettings.getPassword());
    private final JLabel statusLabel = new JLabel(" ", SwingConstants.CENTER);
+
    private final JButton testButton = new JButton("TEST");
    private final JButton saveButton = new JButton("SAVE");
    private final JButton cancelButton = new JButton("CANCEL");
@@ -49,20 +40,24 @@ public class ServerSettingsOverlay extends UIUtils.DimmedOverlay {
       this.onClose = onClose;
       this.onSaved = onSaved;
       this.setLayout(new GridBagLayout());
-      this.addMouseListener(new MouseAdapter() {});
+      this.addMouseListener(new MouseAdapter() {
+      });
 
       JPanel box = new JPanel(new BorderLayout());
       box.setPreferredSize(new Dimension(640, 480));
       box.setBackground(Color.BLACK);
-      box.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2), new EmptyBorder(20, 30, 20, 30)));
+      box.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE, 2),
+            new EmptyBorder(20, 30, 20, 30)));
 
       JPanel header = new JPanel();
       header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
       header.setOpaque(false);
       header.add(this.centered(UIUtils.createLabel("SERVER SETTINGS"), Color.WHITE, UIUtils.undertaleFont));
       header.add(this.centered(new JLabel(" "), Color.GRAY, SMALL_FONT));
-      header.add(this.centered(new JLabel("ADMIN'S COMPUTER (RUNS XAMPP): localhost + root"), Color.LIGHT_GRAY, SMALL_FONT));
-      header.add(this.centered(new JLabel("OTHER DEVICES: ADMIN'S IP + heartbreak ACCOUNT"), Color.LIGHT_GRAY, SMALL_FONT));
+      header.add(
+            this.centered(new JLabel("ADMIN'S COMPUTER (RUNS XAMPP): localhost + root"), Color.LIGHT_GRAY, SMALL_FONT));
+      header.add(
+            this.centered(new JLabel("OTHER DEVICES: ADMIN'S IP + heartbreak ACCOUNT"), Color.LIGHT_GRAY, SMALL_FONT));
       box.add(header, BorderLayout.NORTH);
 
       JPanel form = new JPanel(new GridBagLayout());
@@ -82,7 +77,7 @@ public class ServerSettingsOverlay extends UIUtils.DimmedOverlay {
       footer.add(this.statusLabel);
       JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 10));
       buttons.setOpaque(false);
-      for (JButton button : new JButton[]{this.testButton, this.saveButton, this.cancelButton}) {
+      for (JButton button : new JButton[] { this.testButton, this.saveButton, this.cancelButton }) {
          UIUtils.styleButton(button);
          button.setFont(FIELD_FONT);
          button.setPreferredSize(new Dimension(150, 40));
@@ -97,7 +92,7 @@ public class ServerSettingsOverlay extends UIUtils.DimmedOverlay {
       this.testButton.addActionListener(e -> this.test());
       this.saveButton.addActionListener(e -> this.save());
       this.cancelButton.addActionListener(e -> this.onClose.run());
-      for (JTextField field : new JTextField[]{this.hostField, this.portField, this.userField, this.passwordField}) {
+      for (JTextField field : new JTextField[] { this.hostField, this.portField, this.userField, this.passwordField }) {
          field.addActionListener(e -> this.save());
       }
 
@@ -110,7 +105,6 @@ public class ServerSettingsOverlay extends UIUtils.DimmedOverlay {
       });
    }
 
-   // Focus the first field once the overlay is on screen.
    public void focusFirstField() {
       this.hostField.requestFocusInWindow();
       this.hostField.selectAll();
@@ -154,6 +148,7 @@ public class ServerSettingsOverlay extends UIUtils.DimmedOverlay {
       this.statusLabel.setForeground(color);
    }
 
+   // Check if server is reachable
    private void test() {
       Integer port = this.parsePort();
       if (port == null) {
@@ -202,7 +197,8 @@ public class ServerSettingsOverlay extends UIUtils.DimmedOverlay {
       }
 
       try {
-         ServerSettings.update(this.hostField.getText(), port, this.userField.getText(), new String(this.passwordField.getPassword()));
+         ServerSettings.update(this.hostField.getText(), port, this.userField.getText(),
+               new String(this.passwordField.getPassword()));
       } catch (IOException e) {
          this.showStatus("COULD NOT SAVE SETTINGS: " + e.getMessage(), Color.RED);
          return;

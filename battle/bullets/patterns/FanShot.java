@@ -27,7 +27,6 @@ public class FanShot extends BulletPattern {
          double x = ThreadLocalRandom.current().nextDouble(EDGE_MARGIN, this.arenaWidth - EDGE_MARGIN);
          int middle = BULLETS_PER_FAN / 2;
          for (int i = 0; i < BULLETS_PER_FAN; i++) {
-            // 0 degrees is straight down; the fan is centered on it.
             double angle = Math.toRadians((i - middle) * SPREAD_DEGREES);
             this.bullets.add(this.makeBullet(x, -20.0, SPEED * Math.sin(angle), SPEED * Math.cos(angle), BULLET_SIZE, BULLET_SIZE, DAMAGE, this.bulletSprite));
          }

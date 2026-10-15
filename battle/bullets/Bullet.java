@@ -14,7 +14,8 @@ public class Bullet {
    public final int damage;
    public final Color color;
    public final Image sprite;
-
+   
+   // Bullet with sprite
    public Bullet(double x, double y, double vx, double vy, int width, int height, int damage, Image sprite) {
       this.x = x;
       this.y = y;
@@ -27,6 +28,7 @@ public class Bullet {
       this.color = Color.WHITE;
    }
 
+   // Fallback if sprite missing
    public Bullet(double x, double y, double vx, double vy, int width, int height, int damage, Color color) {
       this.x = x;
       this.y = y;

@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import battle.bullets.Bullet;
 import battle.bullets.BulletPattern;
 
-// Fast falling needles combined with bullets from the side walls.
+// Fast falling needles combined with bullets from the side walls
 public class CrossFire extends BulletPattern {
    private static final int NEEDLE_EVERY_TICKS = 40;
    private static final int SIDE_EVERY_TICKS = 60;
