@@ -167,7 +167,7 @@ public class ArenaPanel extends JPanel {
    }
 
    private void setupInputMappings() {
-      InputMap im = this.getInputMap(2);
+      InputMap im = this.getInputMap(WHEN_IN_FOCUSED_WINDOW);
       ActionMap am = this.getActionMap();
       im.put(KeyStroke.getKeyStroke("UP"), "pressUp");
       am.put("pressUp", new AbstractAction() {

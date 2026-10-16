@@ -12,7 +12,7 @@ public class Main extends JFrame {
 
     public Main() {
         this.setTitle("HeartBreak!");
-        this.setDefaultCloseOperation(3);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(1000, 750);
         this.setLocationRelativeTo(null);
         this.setResizable(false);

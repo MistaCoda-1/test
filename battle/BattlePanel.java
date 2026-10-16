@@ -176,7 +176,7 @@ public class BattlePanel extends JPanel {
       ActionMap actionMap = this.getActionMap();
       inputMap.put(KeyStroke.getKeyStroke("LEFT"), "moveLeft");
       inputMap.put(KeyStroke.getKeyStroke("RIGHT"), "moveRight");
-      inputMap.put(KeyStroke.getKeyStroke(90, 0), "select");
+      inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, 0), "select");
       actionMap.put("moveLeft", new AbstractAction() {
          @Override
          public void actionPerformed(ActionEvent e) {
